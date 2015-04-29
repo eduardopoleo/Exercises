@@ -5,6 +5,8 @@ string.split("").each_with_index do |value, index|
   new_string = new_array.join()
 end
 
+string.chars.each_with_index
+
 # to simple iterate over the string
 string.each_char do |char|
 
@@ -16,15 +18,30 @@ a[0] = "e"
 
 #=> "ebcd"
 #######################3
-##Array
+##ARRAY
 
 # to remove duplicate elements in an array 
 array.uniq 
 [1, 1, 1, 1].uniq.size == 1
 #=> true
-##################
 
-#hash
+
+#RANGE
+#Iterate over range of numbers:
+(1..n).each do |number|
+
+end
+
+#Ranges 
+
+(1..3) #=> [1, 2, 3] inclusive
+(1...3) #=> [1, 2] exclusive
+#Ranges include the module enumerable so we can say
+(1..3).reduce(:+) #etc
+
+#HASH
+
+hash
 hash.each do |key, value|
 
 end
@@ -46,12 +63,4 @@ class SomeClass
 end
 
 p SomeClass.some_class_method(some_input)
-
-
-
-
-
-
-
-
 
