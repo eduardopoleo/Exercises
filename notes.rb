@@ -62,5 +62,17 @@ class SomeClass
   end
 end
 
-p SomeClass.some_class_method(some_input)
+#modules
+5 % 4 #=> 1
+5 % 3 #=> 2
+5 % 6 #=> 5
+5 % 5 #=> 0
+
+#Division 
+6 / 2 #=> 3
+6 / 3 #=> 2
+6 / 4 #=> 1
+6 / 6 #=> 1
+6 / 7 #=> 0
+
 

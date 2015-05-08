@@ -1,0 +1,249 @@
+1)What is a class?
+It is a code template that basically serves as a mold for creating objects. You can define state attibutes (some can be immidiately initialized) and you can also implement behavior through methods.
+
+2)What is object?
+An object is an instance of a class. It possesses a defined state represeted by the data (value of the attributes) stored within it. 
+
+3)What is ruby module? What's the difference between class and module? 
+Modules are a collection of methods that can be used across different classes. Works sort of like a library that you can plug wherever you need. The do not define the nature of an object as clasess do. 
+
+One use-case of modules is when we want to extract commom behavior between two classes that won't naturally enhirit from each other.
+
+4)Three levels of method access control for classes and modules?
+Public: Methods can be called by anyone. Other classess or instances can call each other public methods. E.x class methods by default 
+Protected: These methods can only be called by the intances of the defining class and its subclasess
+Private: This methods can not be called with an explicit reciever (the reciever is set to .self). Can only be called by the object containing them.
+
+6) Explain this ruby idiom: a ||= b
+In ruby this is the equivalent of 
+
+a || a = b
+
+Which literatlly means if a then do nothing but a is nil, make a equal to b.
+
+In rails this expression allows caching which is useful to increase performance.
+def current_user
+  @current_user ||= User.find(session[:user_id])
+end
+
+The first time we call this method it will issue a query to the data base but will set and store the result in the cash?, next time we call it there will no need to query the object again.  
+
+8) What is a Proc? Better whats the difference between a block, proc and lamda. Is this relevant when constructing DSLs?
+http://awaxman11.github.io/blog/2013/08/05/what-is-the-difference-between-a-block/
+Blocks is leterally a block of code that I can use to repeat certain operations over a define set of data, they can be defined as:
+
+[1,2,3].each { |x| puts x*2 }   # block is in between the curly braces
+
+[1,2,3].each do |x|
+  puts x*2                    # block is everything between the do and end
+end
+
+procs  are instances of the class Proc.  This allows us to call methods on it and assign it to variables (basically store them). Proc basically acts as an anonymous method. 
+
+p = Proc.new { |x| puts x*2 }
+[1,2,3].each(&p)
+The & converts the proc into a block to be use by the each.
+procs can also be call to themselves and the method class can be called on them.
+
+p.call  # prints 'Hello World'
+p.class # returns 'Proc'
+a = p   # a now equals p, a Proc instance
+p       # returns a proc object '#<Proc:0x007f96b1a60eb0@(irb):46>'
+
+Trying to do this with an block with result in errors.
+{ puts "Hello World"}       # syntax error  
+a = { puts "Hello World"}   # syntax error 
+
+Now a lamda is also an instance of Proc can have the same uses as a proc but with little differences: 
+Difference 1) How to initiate them.
+
+p = Proc.new { |x| puts x*2 }
+[1,2,3].each(&lam)
+
+lam = lambda { |x| puts x*2 }
+[1,2,3].each(&lam)
+
+1)Number of arguments. Lamda checks the number of arguments while procs do not care
+
+lam = lambda { |x| puts x }    # creates a lambda that takes 1 argument
+lam.call(2)                    # prints out 2
+lam.call                       # ArgumentError: wrong number of arguments (0 for 1)
+lam.call(1,2,3)                # ArgumentError: wrong number of arguments (3 for 1)
+
+proc = Proc.new { |x| puts x } # creates a proc that takes 1 argument
+proc.call(2)                   # prints out 2
+proc.call                      # returns nil
+proc.call(1,2,3)               # prints out 1 and forgets about the extra arguments
+
+There is also another difference regarding the return key.
+
+9) What is unit testing (in classical terms)? What is the primary technique when writing a test?
+It is test used over small and isolated portion of code. This chunck of codes usually have very specific and defined functionality (e.g a  simple class or a method)
+assert that the result value is equal to the expected
+
+Difference between ==, ===, eql?, equal?.
+http://batsov.com/articles/2011/11/28/ruby-tip-number-1-demystifying-the-difference-between-equals-equals-and-eql/
+Equal checks for object equality basically verifies that the objects have the same object id.
+
+eql? is a more stricted version of ==
+For example 
+
+1 == 1       # true
+1.eql? 1     # true
+1 == 1.0     # true
+1.eql? 1.0   # false
+1.0.eql? 1.0 # true
+
+#######
+What does === means?
+######
+
+13)Difference between += and .concat
++= creates a new object and .concat mutates the original caller.
+
+Extra) the difference between map, each and collect.
+http://stackoverflow.com/questions/9429034/what-is-the-difference-between-map-each-and-collect
+
+.each
+Just do operations over the elements of the enumerable but does not store the result anywhere nor it returns a new enumerable with change values. 
+.map is the same as .collect
+The create a new array with the new values after they were changed
+
+a = [1,2,3]
+=> [1, 2, 3] 
+a.each{|n| n+1}
+=> [1, 2, 3] 
+a.map{|n| n+1}
+=> [2, 3, 4] 
+
+14) Why array.map(&:method_name) is equivalent to array.map {|element| element.method_name} 
+reference: http://www.brianstorti.com/understanding-ruby-idiom-map-with-symbol/
+
+###
+I can wrap my head arond this
+I know &basically calls .to_proc on a object.
+Now how are map implemented and how can I understand the implementations of symbol to proc
+###
+
+15)Which of the expressions listed below will result in "false"?
+true    ? "true" : "false" 
+false   ? "true" : "false" this
+nil     ? "true" : "false" this
+1       ? "true" : "false"
+0       ? "true" : "false"
+"false" ? "true" : "false"
+""      ? "true" : "false"
+[]      ? "true" : "false"
+
+16) Write a method that sorts the keys in a hash by the length of the key as a string. For instance, the hash:
+h = { abc: 'hello', 'another_key' => 123, 4567 => 'third' }
+http://www.sitepoint.com/sorting-algorithms-ruby/
+
+h.keys.map(&:to_s).sort_by(&:size)
+
+19) Consider the following two methods:
+
+def times_two(arg1);
+  puts arg1 * 2;
+end
+
+def sum(arg1, arg2);
+  puts arg1 + arg2;
+end
+
+What will be the result of each of the following lines of code:
+
+times_two 5
+times_two(5)
+times_two (5)
+sum 1, 2 => 7
+sum(1, 2)=> 7
+sum (1, 2) syntax error
+
+When there is only one argument any notation will do.
+When there is two arguments the last one will fail.
+
+20) What will val1 and val2 equal after the code below is executed? Explain your answer.
+
+val1 = true and false  # hint: output of this statement in IRB is NOT value of val1!
+val2 = true && false
+
+In this case and is and addition operation that ruby allows us to do, so basically set the val1 = true and then yield the value of val1 && false which is false
+
+The second case is just performing an operation true && false
+
+####No idea why this works
+21)(a) {p a}["Hello world"]
+###
+
+24) What is a ruby gem?
+Is a reusable library that meets a certain format adequate for the use of ruby and rails applications. 
+examples of gems that I like: bootstrap_form, carrier_wave, carrierwave-aws, will_paginate etc,
+
+
+25) What is your favorite api resource for ruby?
+None
+
+extra) What does self mean?
+Self refers to the current object. The gotcha is that classes are also objects.
+So 
+
+Class Whatever
+  def test
+    puts "This is an instance method #{self}"
+  end
+
+  def self.test_class
+    puts "This is a class method #{self}"
+  end
+end
+
+Whatever.new.test
+puts "This is an instance method #{self}"
+
+Whatever.test_class
+puts "This is a class method #{self}"
+
+extra) What is a Proc?
+ and on a simple level we can use it to store chuncks of code inside a variable for instance
+
+26) What's the difference between blocks, procs and lambdas? (Repeat)
+
+27) About sorting in ruby and in ActiveRecord 
+sort_by(&:attribute) which is the same as sort_by{|object| object.attribute}
+http://www.adamjonas.com/blog/interview-prep/
+
+In ruby is good to use the sort_by method. This method takes in a proc which we can define ourselves. 
+
+No in rails is much better to let sql order the recores retrieved by us
+
+User.all.sort_by{|u| u.first_name} #=> O(log n) Ruby working over the objects extracted on the query
+versus
+User.order(“first_name DESC”) #=> O(1) Sql working on the records directly 
+
+28) What are some of your favorite gems? What are their alternatives?
+I do not know
+
+### I do not know if this is correct
+31 	Ruby what are the various Ruby runtimes, and how are they different?
+JRuby, CRuby, Rubinius?
+###
+
+32)  Matz (Yikihiro Matsumoto)
+
+33) What is the general history of rails?
+Started out in 2003 as part of a 37signal project call basecamp. They wanted a better framework for their development. 
+DHH saw fit to make it open source as he had largely benefit from the open source community to that point.
+
+35 Explain the different pieces of Rails.?
+
+36) Walk through the flow of a request through Rails.
+Routes
+before_filter
+queries maybe
+partial rendering
+after_filter
+
+
+
+
