@@ -244,6 +244,40 @@ queries maybe
 partial rendering
 after_filter
 
+######
+37 	Rails	What are the different server options for running a Rails/Rack app?
+#######
+
+38) Explain CSRF and how Rails combats it.
+Basically there are requests hidden behind html tags such as img for intance. <img src="http://bank.example.com/withdraw?account=Alice&amount=1000000&for=Mallory">
+The image contains a request to generate an action on another site. If the user is authenticated on this other site and there is no protections against it the actions gets executed without the users permision
+
+To protect against all other forged requests, we introduce a required security token that our site knows but other sites don't know. We include the security token in requests and verify it on the server
+
+40) Define DHH?
+
+Define "tenderlove".
+Aaron Patterson, a really important contributor
+
+42)Why do some people say "Rails can't scale"?
+This controversy came up mainly after twitter decided to move away from rails.
+But in reality rails scalabilty will depend on the type of applications that we are building. Twitter was used by millons of people who generated tons of data that needed to be updated very quickly. This is not the case for most web apps.
+#####
+43) What is Rack?
+####
+
+46) What are some Ruby web server options?	
+Unicorn handle requests concurrently
+Puma handle requests concurrently
+Thin
+Phusion
+
+tr
+
+
+
+
+
 
 
 
