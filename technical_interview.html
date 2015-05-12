@@ -272,12 +272,162 @@ Puma handle requests concurrently
 Thin
 Phusion
 
-tr
+48) Explain how AJAX work?
+Ajax stand for asynchronous javascript and XML, and it is used to update specific content on the page without having to do a full reload of the page
 
+- An event happends on the browser side (click over a certain element with an id)
+- Ajax generates an server request to the specific url that we want to work with
+- Get the response back as html 
+- Replace whatever with what the page content on the browser with whatever that was produced
 
+###
+52) what is the issue with the code posted
+http://www.toptal.com/ruby-on-rails/interview-questions
+We are making many queries:
+Post.all
+post.map(&:comments)(this is n queries)
+comments.map(&:author) (this is m queries)
 
+We need to perform eager loading to solve the N + 1 query problem
+If we only require comments we could do
+Post.includes(:comments)
 
+Now to retrive multiple associations we need to 
+Post.includes(:comments, :category)
 
+and if they are nested
+Post.includes(:comments, [:author]).all will retrieve all the posts
+####
 
+53)
 
+get posts/:id/comments   named route: comments_post
+post posts/bulk_load     named route: bulk_load_posts
+
+55) Easier challenge. Seems to me a M:M self referential association
+
+class Person  ActiveRecord::Base
+  belongs_to :parent, class: Person
+  has_many :children, class: Person, foreign_key: :parent_id
+end
+it is not necessary M:M self referential because in this case the child will only have 1 parent. The table will neeed parent_id to be able to set it up.
+This can be extended to two model relationship and wont need anything in the data base because the grandchildren are still childs of the children
+
+And for the second one:
+class Person  ActiveRecord::Base
+  belongs_to :parent, class: Person
+  has_many :children, class: Person, foreign_key: :parent_id
+  has_many :grandchildren, class: Person, through: :children, source: :children
+end
+
+56) routes and beers
+kinds = %{ipa pilsen etc}
+get 'beers/:kind' => 'beers#kind', constrains: {kind: Regexp.new(kinds.join('|'))}
+
+57) What is the HTTP 
+It stands for Hyper Text Transfer Protocol. And it is the protocol that guide the information tranfer between 2 end points in the web. Notably, it's statelessness nature is what makes do things the way we do it on the web, passing information in params, having different controller actions with specific routes 
+
+58)What is HTTP session state?
+The session is used when we need to to save information in a semi-permanent way to allow certain interactions to happen. Common uses are user authentication and shpping carts, keepint track of the cart_id or the user_id are esential for an efective user experience. 
+
+59) What is a Idempotent operation?
+Is that one that have no additional effects if it is called more than once! ex abs(abs(3)) = abs(3)
+
+60) What are Persistent connections? 
+It is also known as keep alive. The idea is using a single TCP conection to send multiple HTTP request/responses, as oposed to open a new request after each request/response cycle.
+
+What does UNION do? What is the difference between UNION and UNION ALL?
+The union operator is used to select the union-set of two different select statements
+SELECT column_name(s) FROM table1
+UNION
+SELECT column_name(s) FROM table2;
+
+The union operator select only distinc values if we want to allow duplication we should use union all 
+SELECT column_name(s) FROM table1
+UNION ALL
+SELECT column_name(s) FROM table2;
+
+63) List and explain the different types of JOIN clauses supported in ANSI-standard SQL.
+
+124) What’s your favorite testing tool?	
+Rspec + capybara, also like minitest but have not used it that much
+
+126) How would you declare and use a constructor in Ruby?
+Contructors are the methods we use to initialize new objects in ruby. We know that we do this
+
+pencil = Pencil.new('yellow')
+
+but what does exactly the new class method do? 3things:
+
+class Point
+  def self.my_new(x,y)
+    instance = allocate #allocate a new, empty object
+    instance.my_initialize(*args, &block) #Run any specialized initialization we write
+    instance #return the instance we just created
+  end
+
+  def my_initilize(x,y)
+    @x = x
+    @y = y
+  end
+end
+
+127) How does a symbol differ from a string?
+http://www.reactive.io/tips/2009/01/11/the-difference-between-ruby-symbols-and-strings/
+Symbols are unique meaning that equal objects are going to have the same object_id. This is not the same for strings, every string must have its place in memory because they are mutable and the ruby interpreter never knows what exact data is the string holding. 
+Symbols are not mutable 
+
+puts "hello"  " world" # => hello world
+puts :hello :" world"# => *.rb:4: undefined method ` for :hello:Symbol (NoMethodError)
+
+When a string is created several things happen
+1) computer allocate memory for the new string object
+2) instanciate the string
+3) once its done marks it for destruction
+4) GC comes and picks it up
+
+If we are creating a string with the same content several times e.g:
+
+puts 'yeah '
+puts 'yeah '
+puts 'yeah '
+puts 'yeah '
+
+The four steps mentioned above repeat themselves n times. 
+
+Symbols are inmutable and will ocupy the same space in memory so they will no be created again and again furthermore they are keep in memory at special optimized symbol dictionary making their retrieval eaiser.
+conclusion: use symbols when performance and robustness is an issue
+            use strings when a flexible data type is required
+
+129) How would you create getter and setter methods in Ruby?
+I would use attr_accessor :attribute
+
+130)Describe the difference between class and instance variables?
+Class is a code template that is used to instanciate objects. Instance variables define the state of an instance of a class they are two completely different things
+
+131)Explain some of the looping structures available in Ruby? Explain situations in which you would use one over another?
+each When I want to loop through a colection and performe a certain action.
+map when I want to loop through a collection and modify each of the elements of the collection and return the result.
+while when I want to run through the loop until a certain condition is met. the loop wont start if the condition is not met befrehand.
+begin until same as while but I want to ensure that the loop will a least go once
+loop do a loop that will usually contain a condition inside that will make it to break
+for something in colletion_of_something same as each.
+downto(0) do |i|
+
+132) Explain the difference between a has_one and belongs_to association.
+The main difference in this case is where in what table is the foreign key located, it should always be on the table that correspond to the model that has the belongs_to association.
+
+133) Explain a polymorphic association.
+A model can belong to several other models on a single association.
+class Picture
+  belongs_to :imaginable, polymorphic: true
+end
+
+class Employee
+  has_many :pictures, as: :imaginable
+end
+
+class Employee
+  has_many :pictures, as: :imaginable
+end
 
