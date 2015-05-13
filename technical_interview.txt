@@ -1,0 +1,1187 @@
+1)What is a class?
+It is a code template that basically serves as a mold for creating objects. You can define state attibutes (some can be immidiately initialized) and you can also implement behavior through methods.
+
+2)What is object?
+An object is an instance of a class. It possesses a defined state represeted by the data (value of the attributes) stored within it. 
+
+3)What is ruby module? What's the difference between class and module? 
+Modules are a collection of methods that can be used across different classes. Works sort of like a library that you can plug wherever you need. The do not define the nature of an object as clasess do. 
+
+One use-case of modules is when we want to extract commom behavior between two classes that won't naturally enhirit from each other.
+
+4)Three levels of method access control for classes and modules?
+Public: Methods can be called by anyone. Other classess or instances can call each other public methods. E.x class methods by default 
+Protected: These methods can only be called by the intances of the defining class and its subclasess
+Private: This methods can not be called with an explicit reciever (the reciever is set to .self). Can only be called by the object containing them.
+
+6) Explain this ruby idiom: a ||= b
+In ruby this is the equivalent of 
+
+a || a = b
+
+Which literatlly means if a then do nothing but a is nil, make a equal to b.
+
+In rails this expression allows caching which is useful to increase performance.
+def current_user
+  @current_user ||= User.find(session[:user_id])
+end
+
+The first time we call this method it will issue a query to the data base but will set and store the result in the cash?, next time we call it there will no need to query the object again.  
+
+8) What is a Proc? Better whats the difference between a block, proc and lamda. Is this relevant when constructing DSLs?
+http://awaxman11.github.io/blog/2013/08/05/what-is-the-difference-between-a-block/
+Blocks is leterally a block of code that I can use to repeat certain operations over a define set of data, they can be defined as:
+
+[1,2,3].each { |x| puts x*2 }   # block is in between the curly braces
+
+[1,2,3].each do |x|
+  puts x*2                    # block is everything between the do and end
+end
+
+procs  are instances of the class Proc.  This allows us to call methods on it and assign it to variables (basically store them). Proc basically acts as an anonymous method. 
+
+p = Proc.new { |x| puts x*2 }
+[1,2,3].each(&p)
+The & converts the proc into a block to be use by the each.
+procs can also be call to themselves and the method class can be called on them.
+
+p.call  # prints 'Hello World'
+p.class # returns 'Proc'
+a = p   # a now equals p, a Proc instance
+p       # returns a proc object '#<Proc:0x007f96b1a60eb0@(irb):46>'
+
+Trying to do this with an block with result in errors.
+{ puts "Hello World"}       # syntax error  
+a = { puts "Hello World"}   # syntax error 
+
+Now a lamda is also an instance of Proc can have the same uses as a proc but with little differences: 
+Difference 1) How to initiate them.
+
+p = Proc.new { |x| puts x*2 }
+[1,2,3].each(&lam)
+
+lam = lambda { |x| puts x*2 }
+[1,2,3].each(&lam)
+
+1)Number of arguments. Lamda checks the number of arguments while procs do not care
+
+lam = lambda { |x| puts x }    # creates a lambda that takes 1 argument
+lam.call(2)                    # prints out 2
+lam.call                       # ArgumentError: wrong number of arguments (0 for 1)
+lam.call(1,2,3)                # ArgumentError: wrong number of arguments (3 for 1)
+
+proc = Proc.new { |x| puts x } # creates a proc that takes 1 argument
+proc.call(2)                   # prints out 2
+proc.call                      # returns nil
+proc.call(1,2,3)               # prints out 1 and forgets about the extra arguments
+
+There is also another difference regarding the return key.
+
+9) What is unit testing (in classical terms)? What is the primary technique when writing a test?
+It is test used over small and isolated portion of code. This chunck of codes usually have very specific and defined functionality (e.g a  simple class or a method)
+assert that the result value is equal to the expected
+
+Difference between ==, ===, eql?, equal?.
+http://batsov.com/articles/2011/11/28/ruby-tip-number-1-demystifying-the-difference-between-equals-equals-and-eql/
+Equal checks for object equality basically verifies that the objects have the same object id.
+
+eql? is a more stricted version of ==
+For example 
+
+1 == 1       # true
+1.eql? 1     # true
+1 == 1.0     # true
+1.eql? 1.0   # false
+1.0.eql? 1.0 # true
+
+#######
+What does === means?
+######
+
+13)Difference between += and .concat
++= creates a new object and .concat mutates the original caller.
+
+Extra) the difference between map, each and collect.
+http://stackoverflow.com/questions/9429034/what-is-the-difference-between-map-each-and-collect
+
+.each
+Just do operations over the elements of the enumerable but does not store the result anywhere nor it returns a new enumerable with change values. 
+.map is the same as .collect
+The create a new array with the new values after they were changed
+
+a = [1,2,3]
+=> [1, 2, 3] 
+a.each{|n| n+1}
+=> [1, 2, 3] 
+a.map{|n| n+1}
+=> [2, 3, 4] 
+
+14) Why array.map(&:method_name) is equivalent to array.map {|element| element.method_name} 
+reference: http://www.brianstorti.com/understanding-ruby-idiom-map-with-symbol/
+
+###
+I can wrap my head arond this
+I know &basically calls .to_proc on a object.
+Now how are map implemented and how can I understand the implementations of symbol to proc
+###
+
+15)Which of the expressions listed below will result in "false"?
+true    ? "true" : "false" 
+false   ? "true" : "false" this
+nil     ? "true" : "false" this
+1       ? "true" : "false"
+0       ? "true" : "false"
+"false" ? "true" : "false"
+""      ? "true" : "false"
+[]      ? "true" : "false"
+
+16) Write a method that sorts the keys in a hash by the length of the key as a string. For instance, the hash:
+h = { abc: 'hello', 'another_key' => 123, 4567 => 'third' }
+http://www.sitepoint.com/sorting-algorithms-ruby/
+
+h.keys.map(&:to_s).sort_by(&:size)
+
+19) Consider the following two methods:
+
+def times_two(arg1);
+  puts arg1 * 2;
+end
+
+def sum(arg1, arg2);
+  puts arg1 + arg2;
+end
+
+What will be the result of each of the following lines of code:
+
+times_two 5
+times_two(5)
+times_two (5)
+sum 1, 2 => 7
+sum(1, 2)=> 7
+sum (1, 2) syntax error
+
+When there is only one argument any notation will do.
+When there is two arguments the last one will fail.
+
+20) What will val1 and val2 equal after the code below is executed? Explain your answer.
+
+val1 = true and false  # hint: output of this statement in IRB is NOT value of val1!
+val2 = true && false
+
+In this case and is and addition operation that ruby allows us to do, so basically set the val1 = true and then yield the value of val1 && false which is false
+
+The second case is just performing an operation true && false
+
+####No idea why this works
+21)(a) {p a}["Hello world"]
+###
+
+24) What is a ruby gem?
+Is a reusable library that meets a certain format adequate for the use of ruby and rails applications. 
+examples of gems that I like: bootstrap_form, carrier_wave, carrierwave-aws, will_paginate etc,
+
+
+25) What is your favorite api resource for ruby?
+None
+
+extra) What does self mean?
+Self refers to the current object. The gotcha is that classes are also objects.
+So 
+
+Class Whatever
+  def test
+    puts "This is an instance method #{self}"
+  end
+
+  def self.test_class
+    puts "This is a class method #{self}"
+  end
+end
+
+Whatever.new.test
+puts "This is an instance method #{self}"
+
+Whatever.test_class
+puts "This is a class method #{self}"
+
+extra) What is a Proc?
+ and on a simple level we can use it to store chuncks of code inside a variable for instance
+
+26) What's the difference between blocks, procs and lambdas? (Repeat)
+
+27) About sorting in ruby and in ActiveRecord 
+sort_by(&:attribute) which is the same as sort_by{|object| object.attribute}
+http://www.adamjonas.com/blog/interview-prep/
+
+In ruby is good to use the sort_by method. This method takes in a proc which we can define ourselves. 
+
+No in rails is much better to let sql order the recores retrieved by us
+
+User.all.sort_by{|u| u.first_name} #=> O(log n) Ruby working over the objects extracted on the query
+versus
+User.order(“first_name DESC”) #=> O(1) Sql working on the records directly 
+
+28) What are some of your favorite gems? What are their alternatives?
+I do not know
+
+### I do not know if this is correct
+31 	Ruby what are the various Ruby runtimes, and how are they different?
+JRuby, CRuby, Rubinius?
+###
+
+32)  Matz (Yikihiro Matsumoto)
+
+33) What is the general history of rails?
+Started out in 2003 as part of a 37signal project call basecamp. They wanted a better framework for their development. 
+DHH saw fit to make it open source as he had largely benefit from the open source community to that point.
+
+35 Explain the different pieces of Rails.?
+
+36) Walk through the flow of a request through Rails.
+Routes
+before_filter
+queries maybe
+partial rendering
+after_filter
+
+######
+37 	Rails	What are the different server options for running a Rails/Rack app?
+#######
+
+38) Explain CSRF and how Rails combats it.
+Basically there are requests hidden behind html tags such as img for intance. <img src="http://bank.example.com/withdraw?account=Alice&amount=1000000&for=Mallory">
+The image contains a request to generate an action on another site. If the user is authenticated on this other site and there is no protections against it the actions gets executed without the users permision
+
+To protect against all other forged requests, we introduce a required security token that our site knows but other sites don't know. We include the security token in requests and verify it on the server
+
+40) Define DHH?
+
+Define "tenderlove".
+Aaron Patterson, a really important contributor
+
+42)Why do some people say "Rails can't scale"?
+This controversy came up mainly after twitter decided to move away from rails.
+But in reality rails scalabilty will depend on the type of applications that we are building. Twitter was used by millons of people who generated tons of data that needed to be updated very quickly. This is not the case for most web apps.
+#####
+43) What is Rack?
+####
+
+46) What are some Ruby web server options?	
+Unicorn handle requests concurrently
+Puma handle requests concurrently
+Thin
+Phusion
+
+48) Explain how AJAX work?
+Ajax stand for asynchronous javascript and XML, and it is used to update specific content on the page without having to do a full reload of the page
+
+- An event happends on the browser side (click over a certain element with an id)
+- Ajax generates an server request to the specific url that we want to work with
+- Get the response back as html 
+- Replace whatever with what the page content on the browser with whatever that was produced
+
+###
+52) what is the issue with the code posted
+http://www.toptal.com/ruby-on-rails/interview-questions
+We are making many queries:
+Post.all
+post.map(&:comments)(this is n queries)
+comments.map(&:author) (this is m queries)
+
+We need to perform eager loading to solve the N + 1 query problem
+If we only require comments we could do
+Post.includes(:comments)
+
+Now to retrive multiple associations we need to 
+Post.includes(:comments, :category)
+
+and if they are nested
+Post.includes(comments: [:author]).all will retrieve all the posts
+####
+
+53)
+
+get posts/:id/comments   named route: comments_post
+post posts/bulk_load     named route: bulk_load_posts
+
+55) Easier challenge. Seems to me a M:M self referential association
+
+class Person  ActiveRecord::Base
+  belongs_to :parent, class: Person
+  has_many :children, class: Person, foreign_key: :parent_id
+end
+it is not necessary M:M self referential because in this case the child will only have 1 parent. The table will neeed parent_id to be able to set it up.
+This can be extended to two model relationship and wont need anything in the data base because the grandchildren are still childs of the children
+
+And for the second one:
+class Person  ActiveRecord::Base
+  belongs_to :parent, class: Person
+  has_many :children, class: Person, foreign_key: :parent_id
+  has_many :grandchildren, class: Person, through: :children, source: :children
+end
+
+56) routes and beers
+kinds = %{ipa pilsen etc}
+get 'beers/:kind' => 'beers#kind', constrains: {kind: Regexp.new(kinds.join('|'))}
+
+57) What is the HTTP 
+It stands for Hyper Text Transfer Protocol. And it is the protocol that guide the information tranfer between 2 end points in the web. Notably, it's statelessness nature is what makes do things the way we do it on the web, passing information in params, having different controller actions with specific routes 
+
+58)What is HTTP session state?
+The session is used when we need to to save information in a semi-permanent way to allow certain interactions to happen. Common uses are user authentication and shpping carts, keepint track of the cart_id or the user_id are esential for an efective user experience. 
+
+59) What is a Idempotent operation?
+Is that one that have no additional effects if it is called more than once! ex abs(abs(3)) = abs(3)
+
+60) What are Persistent connections? 
+It is also known as keep alive. The idea is using a single TCP conection to send multiple HTTP request/responses, as oposed to open a new request after each request/response cycle.
+
+What does UNION do? What is the difference between UNION and UNION ALL?
+The union operator is used to select the union-set of two different select statements
+SELECT column_name(s) FROM table1
+UNION
+SELECT column_name(s) FROM table2;
+
+The union operator select only distinc values if we want to allow duplication we should use union all 
+SELECT column_name(s) FROM table1
+UNION ALL
+SELECT column_name(s) FROM table2;
+
+63) List and explain the different types of JOIN clauses supported in ANSI-standard SQL.
+
+124) What’s your favorite testing tool?	
+Rspec + capybara, also like minitest but have not used it that much
+
+126) How would you declare and use a constructor in Ruby?
+Contructors are the methods we use to initialize new objects in ruby. We know that we do this
+
+pencil = Pencil.new('yellow')
+
+but what does exactly the new class method do? 3things:
+
+class Point
+  def self.my_new(x,y)
+    instance = allocate #allocate a new, empty object
+    instance.my_initialize(*args, &block) #Run any specialized initialization we write
+    instance #return the instance we just created
+  end
+
+  def my_initilize(x,y)
+    @x = x
+    @y = y
+  end
+end
+
+127) How does a symbol differ from a string?
+http://www.reactive.io/tips/2009/01/11/the-difference-between-ruby-symbols-and-strings/
+Symbols are unique meaning that equal objects are going to have the same object_id. This is not the same for strings, every string must have its place in memory because they are mutable and the ruby interpreter never knows what exact data is the string holding. 
+Symbols are not mutable 
+
+puts "hello"  " world" # => hello world
+puts :hello :" world"# => *.rb:4: undefined method ` for :hello:Symbol (NoMethodError)
+
+When a string is created several things happen
+1) computer allocate memory for the new string object
+2) instanciate the string
+3) once its done marks it for destruction
+4) GC comes and picks it up
+
+If we are creating a string with the same content several times e.g:
+
+puts 'yeah '
+puts 'yeah '
+puts 'yeah '
+puts 'yeah '
+
+The four steps mentioned above repeat themselves n times. 
+
+Symbols are inmutable and will ocupy the same space in memory so they will no be created again and again furthermore they are keep in memory at special optimized symbol dictionary making their retrieval eaiser.
+conclusion: use symbols when performance and robustness is an issue
+            use strings when a flexible data type is required
+
+129) How would you create getter and setter methods in Ruby?
+I would use attr_accessor :attribute
+
+130)Describe the difference between class and instance variables?
+Class is a code template that is used to instanciate objects. Instance variables define the state of an instance of a class they are two completely different things
+
+131)Explain some of the looping structures available in Ruby? Explain situations in which you would use one over another?
+each When I want to loop through a colection and performe a certain action.
+map when I want to loop through a collection and modify each of the elements of the collection and return the result.
+while when I want to run through the loop until a certain condition is met. the loop wont start if the condition is not met befrehand.
+begin until same as while but I want to ensure that the loop will a least go once
+loop do a loop that will usually contain a condition inside that will make it to break
+for something in colletion_of_something same as each.
+downto(0) do |i|
+
+132) Explain the difference between a has_one and belongs_to association.
+The main difference in this case is where in what table is the foreign key located, it should always be on the table that correspond to the model that has the belongs_to association.
+
+133) Explain a polymorphic association.
+A model can belong to several other models on a single association.
+class Picture
+  belongs_to :imaginable, polymorphic: true
+end
+
+class Employee
+  has_many :pictures, as: :imaginable
+end
+
+class Employee
+  has_many :pictures, as: :imaginable
+end
+
+class CreatePictures  ActiveRecord::Migration
+  def change
+    create_table :pictures do |t|
+      t.string :imaginable_type
+      t.integer :imaginable_id
+      t.timestamps
+    end
+  end
+end
+
+134) Explain what functional testing is.
+Test multiple components in colaboration. Usually done at the controller level.
+
+##
+135) what is the security hole?
+The user could just simple go to the developer tools and change the value of the form to be submmited. For instance if he could change given_name to is_admin and that would make him admin. To avoid this we use strong parameters to specify what infomormation is going to be accepted to update the user. 
+
+
+139) Rails Date/time 
+Since we need to know the hours we can use time instead of date
+def distance_of_time_in_words_or_absolute(date)
+  if (Time.now - date.to_time)/1.day < 2 
+    "about #{((Time.now - date.to_time)/1.hour).round} ago"
+  else
+    "#{date}"
+  end
+end
+
+141) Test driven development.
+- Test first and write code later
+It is probably the biggest minset shift from previous software development protocols but it good because it forces to you to know your application requirements before you start coding
+- Write barely enough code to make your test pass.
+This is not very obvious why for simple codebases but when we have a complex codebase overgeneralizing could be dangerous.
+- Be through but do not over test.
+We want to ensure our application cover all the edge cases but we do not want to bloat our test suite with unnecesary details specs which can end up being detrimental at the end
+- Red - Green - Refactor
+
+143) Demonstrate two ways to create an empty hash.	
+hash = {4 => 's'}
+hash = Hash.new(4)
+
+145) Build a hash with two symbols as keys that each have different strings as values.
+hash = {:a => 'string1', :b => 'string2'}
+
+146) Demonstrate how to pass a key into a hash.
+hash[:a]
+
+147) What is returned if you pass a key that does no exist into a hash?
+It really depends on how the hash was initialized, there at least 3 cases I know of:
+1) When no default value was specifed:
+h = Hash.new() 
+h[:a] => nil
+
+2) When the default value is an specific value
+h = Hash.new(4) 
+h[:a] => '4'
+h[:b] => '4'
+Here both 4 string are the same object
+
+3) When the default value is specified as a block
+@my_hash = Hash.new {|h,k| h[k] = []}
+h[:a] => '4'
+h[:b] => '4'
+Here both strings are diffrent objects
+
+148) Demonstrate how to change the value associated with a key in a hash.
+h = {:a => '4'}
+h[:a] #=> '4' 
+h[:a] = 5 #=> 5
+h[:a] #=> 5
+
+150) How would you return all the keys in hash
+h.keys
+
+151) How do you see if a key is in a hash?
+h.keys.include?(:a)
+
+153) How do you return all the values from a hash?
+h.values
+
+154) How would you merge one hash into another hash?
+hash = { "jim" => 53, "amy" => 20, "dan" => 23 }
+new_hash = hash.merge({ "jim" => 54, "jenny" => 26 })
+#=> new_hash = {"jim"=>54, "amy"=>20, "dan"=>23, "jenny"=>26}
+The new values for the same keys will replace the old ones and this will not mutate the caller unles we ad the bang (!)
+
+154) How would you add a key value pair to an existing hash?
+hash['rose' => 49]
+
+156) Why would you use double or single quotes?
+Both are used to define strings, but double quoute allows us to perform expression substitution.
+
+157) Make a string with quotes inside the string in a couple ways.
+"hello this 'is' martyna"
+%('This is very "flexible"')
+
+160) How do you interpolate into a string?
+You would do it like this: "#{variable}"
+
+161) Is nil an object?
+Yes
+nil.class.ancestors
+#=>[NilClass, JSON::Ext::Generator::GeneratorMethods::NilClass, Object, ActiveSupport::Dependencies::Loadable, PP::ObjectMixin, JSON::Ext::Generator::GeneratorMethods::Object, Kernel, BasicObject]
+
+162) nil.nil? returns?
+true
+
+164) Demonstrate how to define a method with default argument values.
+def array_method(array = [])
+  array << 2
+end
+
+165) Demonstrate how to define a method that takes a variable amount of arguments.
+Using the splat operator
+def many_parameters(*arg)
+  arg.reduce(:+)
+end
+
+166) What does this do? File.open("example_file.txt") do |file|
+it opens a file and then enters and then follow the instructions set in the block
+
+167)	Which is right class dog ... Class dog ... class Dog ...or... Class Dog?
+class Dog
+
+#######
+171) Are instance variables available to class methods?
+https://rubymonk.com/learning/books/4-ruby-primer-ascent/chapters/45-more-classes/lessons/113-class-variables
+I do not think so although there are class instance variables
+#######
+
+Extra) Are instance methods available to class methods?
+No try: this throws an error:
+class Dog
+  attr_accessor :price
+  
+  def initialize(price)
+    @value
+  end
+  
+  def self.how_do_most_dogs_bark 
+    bark
+  end
+
+  def bark 
+    puts 'wouf wouf wouf'
+  end
+end
+
+dog = Dog.new(3)
+p dog.bark
+p Dog.how_do_most_dogs_bark
+
+173) Use the ? : statement
+easy
+
+175) the bark instance variable is initialize in the initialize method.
+I like to ruff ruff
+it is then interpolated on the speak method "" 
+
+176) What does the following code print? Explain the result.
+I get: "Sometimes I go "
+Because instance variables are NOT available to class methods because there are set on the initialize method and contain within an specific instance and not in the class body.
+
+177) What does the code prints?
+it prints nil, since the @nice variable has not been set to anything
+
+188) Refactor the following class with the built-in Ruby shortcut getter / setter method.
+class Sky
+  attr_accessor :color
+  def initialize(color)
+    @color = color
+  end
+end
+
+189) Use the following code to create an instance of the Cat class.
+module Wrapper
+  module Container
+    class Cat
+    end
+  end
+end
+We need to use namespace becuase of the modules
+cat = Wrapper::Container::Cat.new
+
+190) Discuss how Modules are used to avoid namespace collisions in the following example.?
+The name space allows to make a distintion between the two crane classes.
+
+191) What does the following code prints?
+"I like wood" Remember that interpolation basically transform the content into a string, so the symbol will now be a string and the column is dropped
+
+196) What is the role of MVC architecture in Ruby on Rails?
+It is a way to organize the code base and keep a logical separation of concerns between all the applications components.
+ 	
+201) What are the steps involved in writing and setting up an application in Ruby on Rails?  
+- Decide what DBMS is to be used
+- Initialize the application 
+- Create and configure the database 
+- Install and set up the gems required
+- Write code
+
+202) What is the directory structure of Rails?
+app/controllers
+app/models
+app/views
+app/assets
+app/assets/images
+app/assets/stylesheets
+app/assets/javascript
+config/routes
+Gemfile
+spec/controllers
+spec/models
+spec/features
+spec/fabricators
+spec/spec_helper.rb
+db/migrate
+db/schema
+public
+
+
+203) What are the different components of Rails?
+https://github.com/rails/rails
+ActiveRecord
+ActiveSupport
+ActionMailer
+ActiveModel
+ActiveResource
+ActionPack
+
+ 	
+204) What is the main function of helpers used in Ruby on Rails?
+Help to implemente certain funtionalities in the view. They usuallly to manipulate how the content is presented to the user as oposed the type of content.
+
+208) 	What is the difference between render and redirect?
+redirect basically issue a new request and takes the information to a different controller action and endpoint
+render just render the corresponding template with the instance variables defined on the view
+
+209) What are the different types of association relationships that exist?
+1:M
+M:M
+has_one, belongs_to
+1:M Polymorphic associations
+self referencial associations
+
+210) What is the function of ORM in Ruby on Rails?
+Object-relational-mapping
+Is the technique that connects data with rich behavior objects, this allows for easy retrieval and modification without having to write sql queires.
+
+####
+211) What are the components defined in the model from MVC architecture?
+Contains the data to the application
+Business logic
+Model relationships
+model validation
+
+217) Class A is a rapidly changing class and Class B is relatively stable. Should Class A depend on Class B or should Class B depend on Class A?
+Class A should depend on class B. The other way around can break the application.
+
+220)	What does the following code print?
+"yes!"
+
+221) In the following example, the Array#map method is passed the following code block: {|number| number * 2} Describe how the code block works in the following example. It is just a regular map operation
+
+222) What does the following code print?
+"captain planet"
+
+225)What does the following code print?
+def add(x, y)
+  return(x + y)
+end
+
+result = add(4, 5) do
+  puts "Hey mom"
+end
+p result
+it returns 9, becuase there is not yield statement before the return argument so the add method nevers "yields" the execution to the block passeed in
+Note: a method can take a block even if it takes in a defined number of arguments
+
+226) What does the following code print?
+["TOMMY", "CHUCKIE"]
+
+227) What does the following code print?
+True, instance methods are inherited from the parent class 
+
+228)	What does the following code print?
+"we are living creatures with hair", class method are also inherit from the parent class.
+
+233) What does the following code print?
+"Arg", Method can be overwritten
+
+234) What does the following code print?
+"Dr. Phil McGraw" super calls the implementation of the parent class for the same method
+
+235) Demonstrate how to create an instance of the Textbook class. Explain.
+class Book
+  def initialize(args)
+    @pages = args.fetch(:pages)
+    @title = args.fetch(:title)
+  end
+end
+
+class Textbook < Book
+  def initialize(args)
+    @chapters = args.fetch(:chapters)
+  end
+end
+fetch is a way to retrieve values from a hash. If the key is not found it will throw an error.
+Here then we need to ensure that our hash argument has the :chapters key inside.  :pages and :title are not needed becuase the initialize method was overwritten by textbook book = Textbook.new({:chapters => ['1', '2', '3']})
+class Planet
+  def initialize(mass, volume)
+    @mass = mass
+    @volume = volume
+  end
+end
+
+class Saturn < Planet
+  def initialize(mass, volume, number_of_rings)
+    super(mass, volume)
+    @number_of_rings = number_of_rings
+  end
+end
+
+saturn = Saturn.new(233, 444, 5)
+p saturn
+
+In this case the initialize method of Saturn is using super which calls the initialize method of the paren class in this case planet, so we still need all three arguments in order to initialize saturn
+267) What SQL is generated to create the articles table in the database.
+CREATE TABLE "articles" ("id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "title" varchar(255), "created_at" datetime, "updated_at" datetime);
+
+268) What SQL does the following code generate?
+Article.create(title: "blah blah blah")
+INSERT INTO "articles" ("created_at", "title", "updated_at")
+VALUES (?, ?, ?)  [["created_at", "2014-06-27 18:25:38.638132"], ["title", "blah blah blah"], ["updated_at", "2014-06-27 18:25:38.638132"]]
+
+270) What SQL does the following code generate?
+Article.find(1)
+SELECT  "articles".* FROM "articles"  WHERE "articles"."id" = ? LIMIT 1  [["id", 1]]
+
+
+271) What SQL does the following code generate?
+Article.all
+SELECT "articles".* FROM "articles"
+
+272) What SQL does the following code generate?
+Article.first
+SELECT  "articles".* FROM "articles"   ORDER BY "articles"."id" ASC LIMIT 1
+
+273) What SQL does the following code generate?
+SELECT  "articles".* FROM "articles"   ORDER BY "articles"."id" DESC LIMIT 5
+
+283) Create a text file with the text below and name it small_text_file.txt. Use Ruby to iterate over the lines and print each line.
+File.open('/home/eduardo/Desktop/text_file.txt', "r") do |file|
+  file.each_line do |line|
+    puts line
+  end
+end
+
+284) Read through the small_text_file.txt file line by line by hitting enter for every line.
+The same as above but adding "\n"
+
+308)	What error is raised if a method is passed the wrong number of arguments?
+ArgumentError
+
+309) What error is raised if method name resolution fails?
+NoMethodError
+
+333) What is a Struct in Ruby?
+A Struct is a convenient way to bundle a number of attributes together, using accessor methods, without having to write an explicit class.
+Basically just a simple way of constructing class-like objects for quick generation of intances
+
+335)Is #initialize an instance method or a class method?
+It is an instance method, new on the other hand is a class method
+
+337) What is the difference between an instance variable and a class variable?
+The scope. Instance variables define the state of a given instance at a given time and they are initilize within instance methods. Class variables are set in the body of the class and can be accessible by the class and not the instances. 
+
+348) What does a bang ! at the end of a method signify?
+generally means that the method mutates the caller
+
+351) When might you explicitly use the return statement?
+When you want to stop the execution of the method at a specific point  and possible avoiding some undesire implicit returns down the line.
+
+352) What is the opposite of Enumberable#select?
+The opposite is .reject
+
+#####
+353) What is the synonym of Enumberable#find ?
+http://ruby-doc.org/core-2.2.2/Enumerable.html
+It seems to be detect but it is not quite a synonym as seen in the ruby guides
+
+354) What is the synonym of Enumberable#collect ?
+http://stackoverflow.com/questions/2549364/method-synonyms-in-ruby
+it is map apparently
+
+411) Write a program that find the largest integer in ruby 
+def max (array)
+ array.max 
+end
+
+414) How the web works in Ruby?
+user type the url, a request is produced, the router makes sure goes to the appropiate controller, the controller takes the response as the form of params and act accordingly, it can issue queries to the database, it can manipulate the data obtain, redirect or render templates. 
+When the page is html containing the content of the page is produced and styled using css. Some of the elements in the DOM my contain dynamica behavior like dropbox accordions etc this are produced by javascript.  
+ 	
+417) Fibonacci in Ruby
+def fibo(n)
+  if n == 1
+    0
+  elsif n == 2
+    1
+  else
+    fibo(n-1) + fibo(n-2)
+  end
+end
+
+421) Write code to make the following tests pass:
+def word_count(string)
+  if string == ''
+    0
+  else
+    string.split(" ").size  
+  end
+end
+
+422) Write code to make the following tests pass:
+def average_word_legth(string)
+
+  if string == ''
+    return nil
+  end
+   
+  total_length = 0
+  words = string.split(' ')
+
+  words.each do |word|
+    total_length += word.size
+  end
+
+  average = total_length/words.size
+end
+
+423) Write a code that make the following test pass
+class String
+  def palindrome?
+    array = self.split('')
+    if array.size == 0
+      true
+    elsif array.first != array.last
+      false
+    else
+      self[1..-2].palindrome?
+    end
+  end
+end
+
+424)...
+def vowels(string)
+  array = string.split(' ')
+  result = array.select{|word| word =~ /[aeiou]/}
+end
+
+425...
+def starts_with_c?(string)
+  array = string.split(' ')
+  array.each do |word|
+    if !(word =~ /\Ac/)
+      return false
+    end
+  end
+  true
+end
+
+426 what does the #sub do
+it substitute the matching expression with the other parameter passed in 
+
+427...
+class String
+  def strip_white_spaces
+    split(' ').join('')
+  end
+end
+
+428...
+class String
+  def acronym?(acro)
+    array = self.split
+    array.each_with_index do |word, index|
+      if word[0] != acro[index]
+        return false
+      end
+    end 
+    true
+  end 
+end
+
+429...
+class string
+  def alliteration?
+    array = self.split(' ')
+    new_array = []
+    array.each do |word|
+      new_array << word[0]
+    end
+    new_array.uniq.size == 1
+  end
+end
+
+449 WHAT ARE RUBY GEMS?
+They are libraries or reusable piece of code that can be used on multiple differen projects.
+
+450 WHAT IS THE PURPOSE OF YIELD?
+To literally yield the execution to the blocks that was passed in
+
+453 HOW DO YOU DEFINE INSTANCE VARIABLES?
+They must be initialize within instance methods and must have just one @
+
+454 HOW DO YOU DEFINE GLOBAL VARIABLES?
+using the $ sign
+
+457 WHAT IS A RANGE?
+A range is an object of the range class and defines a numerical range between two values
+
+458 HOW CAN YOU IMPLEMENT METHOD OVERLOADING?
+Aparently we can't
+http://stackoverflow.com/questions/9373104/why-doesnt-ruby-support-method-overloading
+
+459 WHAT IS THE DIFFERENCE BETWEEN ‘&&’, ‘AND’ AND ‘&’ OPERATORS?
+'and' and && are the same but 'and' has lower precedence which means that it will trigger after &&
+
+The && is known as the shortcuit operator becuase it will not proceed further if the first expression is false on the other hand the & will do both operators and then ANDem we can see this by trying this two pieces of code
+if 5 < 4 && 4 / 0
+  puts 'this print either way'
+end
+
+if 5 < 4 & 4 / 0
+  puts 'this print either way'
+end
+
+460 WHAT IS A MODULE?
+It is a collection of methods that can be share across different classes that not necesarily enherit from each other
+
+464 WHAT IS THE PURPOSE OF ENVIRONMENT.RB AND APPLICATION.RB FILE?
+The Enviroment rb allows you to set enviroment specific configurations while the application.rb apply to the overall application
+
+466 HOW CAN YOU DEFINE A CUSTOM EXCEPTION?
+using the raise key word
+
+469 DEFINE THE RAILS MVC IMPLEMENTATION USING AN EXAMPLE.
+Already explained previously
+
+472 WHERE SHOULD YOU PUT CODE THAT IS SUPPOSED TO RUN WHEN YOUR APPLICATION LAUNCHES?
+on the initializer
+
+474 HOW CAN YOU MIGRATE YOUR DATABASE SCHEMA ONE LEVEL DOWN?
+rake db:rollback
+
+477 WHAT IS A FILTER? WHEN IT IS CALLED?
+Filter are methods that run before of after the controller actions
+
+478 WHAT DO CONTROLLERS DO IN RAILS?
+are in charge of integrating the main components in the application:
+evaluate the incoming requests comming from the browser
+can issue queries to the model and the database
+can redirect to other controller actions
+
+480 WHAT IS RESTFUL ROUTING?
+It a protocol for directing infomations that combines url + verb as aposed to only the url this allows for more concise urls. And in rails is well adapted to create CRUD applications
+
+482 Name all routes produced by:
+resources :photos
+
+get /photos index 
+post /photos create 
+get /photos/:id show 
+get /photos/new new 
+delete /photos/:id destroy 
+get /photos/:id/edit edit
+patch /photos/:id update 
+
+484 WHAT IS THE PURPOSE OF LAYOUTS?
+A layout is a view file that defines what surounds a template and it is usually shared across many different templates.
+
+485 IS IT POSSIBLE TO EMBED PARTIAL VIEWS INSIDE LAYOUTS? HOW?
+http://guides.rubyonrails.org/layouts_and_rendering.html#using-nested-layouts
+yes it is possible and you do this
+<%= render partial: "link_area", layout: "graybar" %>
+this snipet will render the partial link_area using the gaybar layout
+
+488 HOW CAN YOU DEFINE A NEW ENVIRONMENT CALLED ‘STAGING’?
+basically follow the heroku docs to set up different dev enviroment and be very careful with pushes
+https://devcenter.heroku.com/articles/multiple-environments
+
+491) WHAT IS A POLYMORPHIC ASSOCIATION?
+It is a 1:M association that repeats it self with different models: ex likes on facebook 
+
+492) What is eager loading?
+It is a solution for the N+1 query problem. In order to implement it in rails one must:
+
+Articles.includes(comments: [:author])
+
+493) HOW CAN YOU EAGER LOAD ASSOCIATED OBJECTS?
+AS shown above
+
+497) WHAT IS THE PURPOSE OF A HELPER METHOD
+helper methods are used in the view to manipulate the way the data is going to be presented in the views
+
+498) WHAT IS FLASH?
+A way to pass temporary primitive data objects between actions. Anything put on a flash will be exposed on the next actions and then clear out
+
+499) 	HOW CAN YOU INSTALL THE MISSING GEMS THAT ARE REQUIRED BY YOUR APPLICATION IN THE SIMPLEST WAY?
+gem install 'gem_name'
+Or writing it on the gemfile
+
+502) HOW DOES FUNCTIONAL TESTING DIFFER FROM UNIT TESTING?
+Functional testing test the integration of multiple components in your applications and in rails is usually implemented at the controller level
+Unit testing on the other hand if done over small and isolated pieces of code, usually we test a class or a method
+
+503) WHAT IS AN ALTERNATIVE TO USING TEST FIXTURES?
+Sample data. We can use fabrication and fake to create fake objects
+
+508) HOW CAN YOU UPLOAD A FILE TO A SERVER?
+using carrierwave and carrier-aws if you want to upload to amazon
+
+511) HOW CAN YOU SHOW SEARCH USER FRIENDLY URLS INSTEAD OF USING ONLY NUMERIC IDS?
+We can use slugs, they are easy to implement we just basically create when we create the resource and then seach by slug insted of using the id
+
+516) HOW CAN YOU SAFEGUARD A RAILS APPLICATION FROM SQL INJECTION ATTACK?
+Basically by not writting sql queries as pure strings like this:
+Client.where("first_name LIKE '%#{params[:first_name]}%'")
+instead using things like this
+Client.where("orders_count = ? AND locked = ?", params[:orders], false)
+
+CAN YOU TELL ME A FEW GOOD COMMUNITY RESOURCES FOR RAILS?
+the edge guides are really good for finding information, hack nights 
+
+WHERE WOULD YOU REACH OUT TO GET THE COMMUNITY TO ANSWER YOUR QUESTIONS?
+Stackoverflow hands down
+
+Delete the working branch
+git branch -d the_local_branch
+
+536) Define a private method in a class.
+They are those that can not be accessed by other classes of instances.they also can not have recievers
+
+Is a range a collection that can be used with methods like map?
+it can certainly be use with each so yes it can be use with map
+
+544) If a method returns self, what is it returning?
+it returns the object that is being apply to method to
+
+546) What do all classes ultimately inherit from?
+BasicObject
+
+547) .rand(6) returns values between x and y.. fill in x and y
+between 0 and 5
+
+548) Can you instantiate a module?
+No
+
+What is the Enumerable module?
+It is a nice module that provides good methods for hadling collections of objects. The only conditions we need in order to use it is that we have a defined way to go through the collection meaning an each method
+
+###
+Can you use . and :: interchangeably, when calling a method on an object instance?
+###
+
+556 Can you define a method initialize in a module?
+No if you try something like the code above you will get the following error
+test.rb:81:in `<main>': undefined method `new' for Dumb:Module (NoMethodError)
+Which makes it clear that the module does not have constructors to instantiate clases, They are meant to provide behavior only
+
+module Dumb
+  def initialize(val)
+    @value = val
+  end
+end
+p module_instance = Dumb.new(4)
+
+559) Show an example of parallel assignment in Ruby
+
+def parallel(val)
+  other_value = val + 4
+  [val, other_value]
+end
+
+initial_value, new_value = parallel(4)
+
+p initial_value
+p new_value
+
+561) Does code below create a huge array?
+x = []
+x[9999] << "Hello"
+no it actually throws an error
+
+578) What does the following code print?
+puts "unicorn".reverse()
+=> 'nrocinu'
+ 	
+579) Can you include a class in another class?
+http://stackoverflow.com/questions/14739640/ruby-classes-within-classes-or-modules-within-modules
+Yes they are completely unrelated entities they do not share information or enhiritance etc
+
+580)  What does the following code print?
+puts :unicorn.reverse()
+error undefined method for this symbol
+
+581) 	What does the following code return?
+[:a, :b, :c].include?(:a)
+true
+
+582)  What does the following code print?
+array = ["snake", "rat", "cat", "dog"]
+array.each do |animal|
+  puts animal if animal[0] == "s"
+end
+
+"snake"
+
+583) What does the following code return?
+[2, 4, 6, 8].map { |number| number ** 2 }
+
+[4, 16, 36, 64]
+
+584) p personality_types.map{|type| type + " person"}
+
+585) Convert ["waters", "too", "polluted", "with", "germs"] to "waters too polluted with germs".
+p ["waters", "too", "polluted", "with", "germs"].join(" ")
+
+
+586) lebron = {:sport => "basketball", :birthplace => "Akron"}
+lebron[:sport]
+
+587) Make a hash that is similar to the snowy_owl hash, but make all of the keys symbols.
+redundant
+
+588) lebron = {:sport=>"basketball", :birthplace=>"Akron", :high_school=>"St. Vincent-St. Mary High School"}
+lebron.values
+
+589) lebron = {:sport=>"basketball", :birthplace=>"Akron", :high_school=>"St. Vincent-St. Mary High School"}
+lebron.keys
+
+590) lebron = {:sport => "basketball", :birthplace => "Akron"}
+lebron[:high_school] = "what ever"
+
+591) result = []
+first_names = ["Hamburglar", "Grimace", "Ronald"]
+last_name = "McDonald"
+p first_names.map{|name| name + " #{last_name}"}
+
+592) What does the following code return?
+{"type" => "bird"}
+
+
+
