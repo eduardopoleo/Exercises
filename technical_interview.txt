@@ -280,7 +280,6 @@ Ajax stand for asynchronous javascript and XML, and it is used to update specifi
 - Get the response back as html 
 - Replace whatever with what the page content on the browser with whatever that was produced
 
-###
 52) what is the issue with the code posted
 http://www.toptal.com/ruby-on-rails/interview-questions
 We are making many queries:
@@ -297,7 +296,6 @@ Post.includes(:comments, :category)
 
 and if they are nested
 Post.includes(comments: [:author]).all will retrieve all the posts
-####
 
 53)
 
@@ -457,6 +455,15 @@ def distance_of_time_in_words_or_absolute(date)
   else
     "#{date}"
   end
+end
+
+140)
+validates :name, presence: true
+validates :age, numericality: {only_integer: true, greater_than_or_equal_to 5}
+validattes :profession, presence: true, if: :is_adult?
+
+def is_adult?
+  age >= 21
 end
 
 141) Test driven development.
@@ -653,12 +660,13 @@ public
 
 203) What are the different components of Rails?
 https://github.com/rails/rails
-ActiveRecord
-ActiveSupport
-ActionMailer
+ActiveRecord. Database mapping 
+ActiveSupport Utility classes and collections of standard libraries
+ActionMailer It is used to manage emails in your application. It is basically a wrapper around action controller and mail gem. it allows you to create emails the same way you would render views in your application
 ActiveModel
 ActiveResource
-ActionPack
+ActionPack framework that provides the views and the controller layers on the MVC. It is in charge to handle requests providing a mechanism for routing by mapping url controller actions, define controllers that generate actions, and create responses by rendering views.
+
 
  	
 204) What is the main function of helpers used in Ruby on Rails?
@@ -706,7 +714,7 @@ result = add(4, 5) do
   puts "Hey mom"
 end
 p result
-it returns 9, becuase there is not yield statement before the return argument so the add method nevers "yields" the execution to the block passeed in
+it returns 9, becuase there isnot yield statement before the return argument so the add method nevers "yields" the execution to the block passeed in
 Note: a method can take a block even if it takes in a defined number of arguments
 
 226) What does the following code print?
@@ -800,6 +808,8 @@ NoMethodError
 333) What is a Struct in Ruby?
 A Struct is a convenient way to bundle a number of attributes together, using accessor methods, without having to write an explicit class.
 Basically just a simple way of constructing class-like objects for quick generation of intances
+Customer = Struct.new(:name, :address) 
+Customer.new("Dave", "123 Main") 
 
 335)Is #initialize an instance method or a class method?
 It is an instance method, new on the other hand is a class method
@@ -1029,6 +1039,7 @@ It is a 1:M association that repeats it self with different models: ex likes on 
 It is a solution for the N+1 query problem. In order to implement it in rails one must:
 
 Articles.includes(comments: [:author])
+Article.includes(:category, :comments)
 
 493) HOW CAN YOU EAGER LOAD ASSOCIATED OBJECTS?
 AS shown above
@@ -1092,7 +1103,7 @@ No
 What is the Enumerable module?
 It is a nice module that provides good methods for hadling collections of objects. The only conditions we need in order to use it is that we have a defined way to go through the collection meaning an each method
 
-###
+549###
 Can you use . and :: interchangeably, when calling a method on an object instance?
 ###
 

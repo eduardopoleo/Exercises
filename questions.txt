@@ -1,0 +1,36 @@
+12) what does the === mean?
+
+21) -> (a) {p a}["Hello world"]
+
+31) 	Ruby what are the various Ruby runtimes, and how are they different?
+JRuby, CRuby, Rubinius?
+
+35) explain the different pieces of rails?
+ActiveRecord etc?
+ActiveSupport etc?
+
+37 	Rails	What are the different server options for running a Rails/Rack app?
+
+43) What is Rack?
+
+135) An application with a is_admin column in the users table has the following code:  
+
+The user could just simple go to the developer tools and change the value of the form to be submmited. For instance if he could change given_name to is_admin and that would make him admin. To avoid this we use strong parameters to specify what infomormation is going to be accepted to update the user. 
+
+171) Are instance variables available to class methods?
+https://rubymonk.com/learning/books/4-ruby-primer-ascent/chapters/45-more-classes/lessons/113-class-variables
+I do not think so although there are class instance variables
+
+211) What are the components defined in the model from MVC architecture?
+Contains the data to the application
+Business logic
+Model relationships
+model validation
+
+353) What is the synonym of Enumberable#find ?
+http://ruby-doc.org/core-2.2.2/Enumerable.html
+It seems to be detect but it is not quite a synonym as seen in the ruby guides
+
+
+
+
