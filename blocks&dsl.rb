@@ -221,28 +221,32 @@ class FancyMarkup
 
   def body(arg={}, &block)
     current_indentation = @indent
-
-    markup << "\n#{current_indentation}<body#{attributes(arg)}>\n" 
-
-    if block_given?
-      @indent += "  "
-      instance_eval(&block) 
-    end
-
-    markup << "#{current_indentation}</body>\n"
-  end
-
-  def div(arg={}, &block)
-    current_indentation = @indent
-
-    markup << "#{current_indentation}<div#{attributes(arg)}>\n"
+    content, selectors = tag_info(args)  
+    
+    markup << "#{current_indentation}<body#{attributes(selectors)}>#{content}\n"
 
     if block_given?
       @indent += "  "
       instance_eval(&block)
+      markup << "#{current_indentation}</body>\n"
+    else
+      markup << "</body>\n"
     end
+  end
 
-    markup << "#{current_indentation}</div>\n"
+  def div(arg={}, &block)
+    current_indentation = @indent
+    content, selectors = tag_info(args)  
+    
+    markup << "#{current_indentation}<div#{attributes(selectors)}>#{content}\n"
+
+    if block_given?
+      @indent += "  "
+      instance_eval(&block)
+      markup << "#{current_indentation}</div>\n"
+    else
+      markup << "</div>\n"
+    end
   end
 
   def ul(*args, &block)
