@@ -214,73 +214,32 @@ class FancyMarkup
   end
   
   def document(&block)
-    @markup << "<html>"
+    @markup << "<html>\n"
     instance_eval(&block)
     @markup << "</html>"
   end
+  
+  def method_missing(tag_name, *args, &block)
+    tag(tag_name, args, &block) 
+  end 
 
-  def body(arg={}, &block)
+  private
+  def tag(tag_name, args, &block)
     current_indentation = @indent
     content, selectors = tag_info(args)  
     
-    markup << "#{current_indentation}<body#{attributes(selectors)}>#{content}\n"
-
-    if block_given?
-      @indent += "  "
-      instance_eval(&block)
-      markup << "#{current_indentation}</body>\n"
-    else
-      markup << "</body>\n"
-    end
-  end
-
-  def div(arg={}, &block)
-    current_indentation = @indent
-    content, selectors = tag_info(args)  
-    
-    markup << "#{current_indentation}<div#{attributes(selectors)}>#{content}\n"
-
-    if block_given?
-      @indent += "  "
-      instance_eval(&block)
-      markup << "#{current_indentation}</div>\n"
-    else
-      markup << "</div>\n"
-    end
-  end
-
-  def ul(*args, &block)
-    current_indentation = @indent
-    content, selectors = tag_info(args)  
-    
-    markup << "#{current_indentation}<ul#{attributes(selectors)}>#{content}\n"
-
-    if block_given?
-      @indent += "  "
-      instance_eval(&block)
-      markup << "#{current_indentation}</ul>\n"
-    else
-      markup << "</ul>\n"
-    end
-  end
-
-  def li(*args, &block)
-    current_indentation = @indent
-    content, selectors = tag_info(args)  
-    
-    markup << "#{current_indentation}<li#{attributes(selectors)}>#{content}"
+    markup << "#{current_indentation}<#{tag_name}#{attributes(selectors)}>#{content}"
 
     if block_given?
       @indent += "  "
       @markup << "\n"
       instance_eval(&block)
-      markup << "\n#{current_indentation}</li>\n"
+      markup << "#{current_indentation}</#{tag_name}>\n"
     else
-      markup << "</li>\n"
+      markup << "</#{tag_name}>\n"
     end
   end
 
-  private
   def attributes(arg)
     attrib = ""
     arg.each do |key, value|
